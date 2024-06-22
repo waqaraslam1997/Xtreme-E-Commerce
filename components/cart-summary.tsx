@@ -7,14 +7,32 @@ import { formatCurrencyString, useShoppingCart } from "use-shopping-cart"
 import { Button } from "@/components/ui/button"
 
 export function CartSummary() {
-
-  const {cartCount, cartDetails, formattedTotalPrice, totalPrice} = useShoppingCart()
-
+  const {
+    cartCount,
+    cartDetails,
+    formattedTotalPrice,
+    totalPrice,
+    redirectToCheckout,
+  } = useShoppingCart()
   const shippingAmount = cartCount! > 0 ? 500 : 0
-
   const totalAmount = totalPrice! + shippingAmount
 
-  function onCheckout() {}
+  const [isLoading, setLoading] = useState(false)
+  const isDisabled = isLoading || cartCount === 0
+
+  async function onCheckout() {
+    setLoading(true)
+    const response = await fetch("/api/checkout", {
+      method: "POST",
+      body: JSON.stringify(cartDetails),
+    })
+    const data = await response.json()
+    const result = await redirectToCheckout(data.id)
+    if (result?.error) {
+      console.error(result)
+    }
+    setLoading(false)
+  }
 
   return (
     <section
@@ -34,18 +52,22 @@ export function CartSummary() {
           <dt className="flex items-center text-sm">
             <span>Shipping estimate</span>
           </dt>
-          <dd className="text-sm font-medium">{formatCurrencyString({value: shippingAmount, currency: "USD"})}</dd>
+          <dd className="text-sm font-medium">
+            {formatCurrencyString({ value: shippingAmount, currency: "USD" })}
+          </dd>
         </div>
         <div className="flex items-center justify-between border-t border-gray-200 pt-4 dark:border-gray-600">
           <dt className="text-base font-medium">Order total</dt>
-          <dd className="text-base font-medium">{formatCurrencyString({value: totalAmount, currency: "USD"})}</dd>
+          <dd className="text-base font-medium">
+            {formatCurrencyString({ value: totalAmount, currency: "USD" })}
+          </dd>
         </div>
       </dl>
 
       <div className="mt-6">
-        <Button className="w-full">
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Loading...
+        <Button onClick={onCheckout} className="w-full" disabled={isDisabled}>
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isLoading ? "Loading..." : "Checkout"}
         </Button>
       </div>
     </section>

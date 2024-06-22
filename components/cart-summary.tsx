@@ -22,7 +22,7 @@ export function CartSummary() {
 
   async function onCheckout() {
     setLoading(true)
-    const response = await fetch("/api/checkout", {
+    const response = await fetch("/api/checkout/", {
       method: "POST",
       body: JSON.stringify(cartDetails),
     })

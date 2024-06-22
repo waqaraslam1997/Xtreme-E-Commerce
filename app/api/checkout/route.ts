@@ -8,7 +8,7 @@ import { stripe } from "@/lib/stripe"
 export async function POST(request : Request) {
     const cartDetails = await request.json()
     const lineItems = validateCartItems(inventory, cartDetails)
-    const origin = request.headers.get("origin")
+    const origin = request.headers.get(`origin`)
 
     const session  = await stripe?.checkout.sessions.create({
         submit_type: "pay",

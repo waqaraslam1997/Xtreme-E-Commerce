@@ -28,7 +28,6 @@ export function ProductInfo({ product }: Props) {
         size: selectedSize,
       },
     }
-    addItem(item)
     isInCart ? incrementItem(item._id) : addItem(item)
     toast({
       title: `${product.name} (${getSizeName(selectedSize)})`,

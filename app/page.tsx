@@ -34,7 +34,7 @@ export default async function Page({ searchParams }: Props) {
   const filter = `*[${productFilter}${categoryFilter}${sizeFilter}${colorFilter}${searchFilter}]`
 
 
-  const products = await client.fetch<SanityProduct>(
+  const products  = await client.fetch<SanityProduct[]>(
     groq`${filter} ${order} {
       _id,
       _createdAt,
